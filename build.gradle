@@ -1,0 +1,94 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+apply plugin: 'forge'
+
+version = "1.7.2-DEVBUILD"
+group = "com.codecraft.zork"
+archivesBaseName = "Zork"
+
+minecraft {
+    version = "1.7.2-10.12.1.1085"
+    assetDir = "eclipse/assets"
+    
+    replace '${version}', project.version
+    replace '${mcversion}', version
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src/main/java'
+		}
+		resources {
+			srcDir 'src/main/resources'
+		}
+	}
+	api {
+		java {
+			srcDir 'src/api/java'
+		}
+	}
+}
+
+processResources
+{
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+javadoc {
+	source += sourceSets.api.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from 'build/docs/javadoc'
+}
+
+task apiJar(type: Jar) {
+	from sourceSets.api.output
+	classifier = 'api'
+}
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.allSource
+	from sourceSets.api.allSource
+	classifier = 'sources'
+}
+
+task devJar(type: Jar) {
+	from sourceSets.main.output
+	from sourceSets.api.output
+	classifier = 'dev'
+}
+
+jar {
+	from sourceSets.api.output
+}
+
+build.dependsOn sourceJar, javadocJar, devJar, apiJar
