@@ -1,0 +1,11 @@
+[
+{
+	"modid": "cczork",
+	"name": "Zork",
+	"version": "${version}",
+	"mcversion": "${mcversion}",
+	"description": "Allows for cool visual effects",
+	"authorList": ["Matthieu Parizeau"],
+	"credits": "TeamCoderCraft"
+}
+]
